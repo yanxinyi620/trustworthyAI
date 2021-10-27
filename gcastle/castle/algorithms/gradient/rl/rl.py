@@ -338,7 +338,7 @@ class RL(BaseLearner):
             
             for i in (range(1, config.nb_epoch + 1)):
 
-                if config.verbose:
+                if i == 1 or i % 100 == 0:
                     logging.info('Start training for {}-th epoch'.format(i))
 
                 input_batch = training_set.train_batch(actor.batch_size, actor.max_length, actor.input_dimension)
@@ -371,11 +371,19 @@ class RL(BaseLearner):
                 feed = {actor.input_: input_batch, actor.reward_: -reward_feed[:,0], actor.graphs_:graphs_feed}
 
                 summary, base_op, score_test, probs, graph_batch, reward_batch, \
-                    reward_avg_baseline, train_step1, train_step2 = sess.run( \
+                    reward_avg_baseline, train_step1, train_step2, \
+                    lr1, lr2, loss1, loss2 = sess.run( \
                         [actor.merged, actor.base_op, actor.test_scores, \
                          actor.log_softmax, actor.graph_batch, actor.reward_batch, \
-                         actor.avg_baseline, actor.train_step1, actor.train_step2], \
+                         actor.avg_baseline, actor.train_step1, actor.train_step2, \
+                         actor.lr1, actor.lr2, actor.loss1, actor.loss2], \
                         feed_dict=feed)
+
+                if i == 1 or i % 100 == 0:
+                    print('reward_batch_score_cyc', reward_batch_score_cyc)
+                    print('max_reward_score_cyc', max_reward_score_cyc)
+                    # print('lr1', lr1, 'lr2', lr2)
+                    print('loss1:', loss1, 'loss2:', loss2)
 
                 if config.verbose:
                     logging.info('Finish updating actor and critic network using reward calculated')

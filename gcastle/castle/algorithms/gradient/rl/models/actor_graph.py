@@ -147,6 +147,8 @@ class Actor(object):
                 self.lr1 = tf.train.exponential_decay(self.lr1_start, self.global_step, self.lr1_decay_step,
                                                       self.lr1_decay_rate, staircase=False, name="learning_rate1")
                 # Optimizer
+                # print(len(tf.trainable_variables()))
+                # print(tf.trainable_variables())
                 self.opt1 = tf.train.AdamOptimizer(learning_rate=self.lr1, beta1=0.9, beta2=0.99, epsilon=0.0000001)
                 # Discounted reward
                 self.reward_baseline = tf.stop_gradient(
@@ -168,6 +170,9 @@ class Actor(object):
                 self.opt2 = tf.train.AdamOptimizer(learning_rate=self.lr2, beta1=0.9, beta2=0.99, epsilon=0.0000001)
                 # Loss
                 weights_ = 1.0  # weights_ = tf.exp(self.log_softmax-tf.reduce_max(self.log_softmax)) # probs / max_prob
+
+                # print(len(tf.trainable_variables()))
+                # print(tf.trainable_variables())
                 self.loss2 = tf.losses.mean_squared_error(self.reward - self.avg_baseline, self.critic.predictions,
                                                           weights=weights_)
                 tf.summary.scalar('loss2', self.loss2)
