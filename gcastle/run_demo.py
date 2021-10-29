@@ -10,7 +10,7 @@ weighted_random_dag = DAG.erdos_renyi(n_nodes=10, n_edges=10, weight_range=(0.5,
 dataset = IIDSimulation(W=weighted_random_dag, n=2000, method='nonlinear', sem_type='quadratic')
 true_dag, X = dataset.B, dataset.X
 
-n = RL(lambda_flag_default=True, nb_epoch=20000)
+n = RL(lambda_flag_default=True, nb_epoch=5000, reg_type='QR')
 
 n.learn(X, dag=true_dag)
 
