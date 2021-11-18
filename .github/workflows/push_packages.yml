@@ -1,0 +1,36 @@
+name: Publish Docker image
+on: [push]
+jobs:
+
+  push_to_pypi:
+    runs-on: ubuntu-latest
+    name: pypi
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get the output time
+        run: |
+          pip3 install twine
+          cd gcastle
+          python3 setup.py sdist bdist_wheel
+          twine upload -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} dist/*
+          ls dist/*
+
+  push_to_dockerhub:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          context: ./gcastle
+          file: ./gcastle/Dockerfile.cpu_torch1.9.0_web
+          push: true
+          tags: gcastle/castleboard-cpu-torch:1.0.1.211112.beta
