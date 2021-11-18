@@ -1,0 +1,32 @@
+FROM rnd-dockerhub.huawei.com/official/ubuntu:14.04
+
+COPY ./sources.list /etc/apt
+COPY ./Python-3.7.6.tgz /opt
+COPY ./gcastle /opt
+COPY ./pip /root
+
+WORKDIR /opt
+
+RUN apt update && \
+    apt upgrade -y && \
+    apt install build-essential -y && \
+    apt install libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev -y && \
+    apt-get install zlib1g-dev && \
+    apt-get install libbz2-dev && \
+    apt-get install libsqlite3-dev && \
+    tar -xzvf Python-3.7.6.tgz && \
+    cd Python-3.7.6 && \
+    ./configure --enable-loadable-sqlite-extensions && \
+    make && \
+    make install
+  
+RUN pip3 config set global.index-url http://mirrors.tools.huawei.com/pypi/simple/ && \
+    pip3 config set global.trusted-host mirrors.tools.huawei.com && \
+    pip3 install --upgrade pip 
+    
+RUN python3 -m pip install -r ./requirements.txt
+
+RUN rm -rf ./Python-3.7.6* && \
+    rm -r /var/lib/apt/lists/*
+		
+CMD python3 web/main.py

@@ -25,7 +25,7 @@ setuptools.setup(
     long_description=long_desc,
     long_description_content_type="text/markdown",
     url="https://github.com/huawei-noah/trustworthyAI/tree/master/gcastle",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages('.', exclude=['web']),
     license="Apache License 2.0",
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -40,7 +40,5 @@ setuptools.setup(
         "scikit-learn>=0.21.1",
         "matplotlib>=2.1.2",
         "networkx>=2.5",
-        "torch>=1.4.0",
-        "tensorflow>=1.15.0",
     ],
 )
